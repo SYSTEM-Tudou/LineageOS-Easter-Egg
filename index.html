@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>LineageOS Easter Egg</title>
+<link rel="icon" type="image/x-icon" href="icon.ico">
+<style>
+:root {
+  --primary: #34666f;
+  --primary-variant: #264b52;
+  --background: #FAFAFA;
+  --surface: #FFFFFF;
+  --error: #B00020;
+  --on-primary: #ffffff;
+  --on-background: #000000;
+  --on-surface: #000000;
+  --on-error: #FFFFFF;
+  --divider: #E0E0E0;
+  --text-secondary: #616161;
+  --toast-bg: #323232;
+  --appbar-text: #000000;
+  --appbar-scrolled-bg: rgba(255,255,255,0.85);
+  --menu-surface: #222226;
+  --menu-text: #ffffff;
+  --ripple-gradient: radial-gradient(circle, rgba(0,0,0,0.12) 0%, rgba(0,0,0,0) 70%);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --primary: #68b6c3;
+    --primary-variant: #4f949f;
+    --background: #121212;
+    --surface: #1e1e1e;
+    --error: #CF6679;
+    --on-primary: #000000;
+    --on-background: #ffffff;
+    --on-surface: #ffffff;
+    --on-error: #000000;
+    --divider: #424242;
+    --text-secondary: #b0b0b0;
+    --toast-bg: #444444;
+    --appbar-text: #ffffff;
+    --appbar-scrolled-bg: rgba(30,30,30,0.85);
+    --menu-surface: #222226;
+    --menu-text: #ffffff;
+    --ripple-gradient: radial-gradient(circle, rgba(255,255,255,0.16) 0%, rgba(255,255,255,0) 70%);
+  }
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Roboto", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  -webkit-tap-highlight-color: transparent;
+}
+body {
+  background-color: var(--background);
+  color: var(--on-background);
+  transition: background 0.25s, color 0.25s;
+  -webkit-font-smoothing: antialiased;
+}
+
+.app-bar {
+  background-color: transparent;
+  color: var(--appbar-text);
+  padding: 8px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: none;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  transition: background-color 0.25s ease, backdrop-filter 0.25s ease;
+}
+.app-bar.scrolled {
+  background-color: var(--appbar-scrolled-bg);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+.app-bar h1 {
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--appbar-text);
+}
+
+.ripple-wrap {
+  position: relative;
+  overflow: hidden;
+}
+.ripple {
+  position: absolute;
+  border-radius: 50%;
+  transform: scale(0);
+  animation: rippleAnim 0.6s ease-out forwards;
+  pointer-events: none;
+}
+@keyframes rippleAnim {
+  to {
+    transform: scale(4);
+    opacity: 0;
+  }
+}
+
+.menu-btn {
+  width: 40px;
+  height: 44px;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  color: var(--appbar-text);
+  font-size: 22px;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  transition: background 0.2s;
+  flex-shrink: 0;
+  outline: none;
+  position: relative;
+  overflow: hidden;
+}
+.menu-btn:hover {
+  background: rgba(0, 0, 0, 0.08);
+}
+@media (prefers-color-scheme: dark) {
+  .menu-btn:hover {
+    background: rgba(255, 255, 255, 0.08);
+  }
+}
+
+.container {
+  padding: 16px;
+  max-width: 1080px;
+  margin: 0 auto;
+}
+.text-content {
+  margin-bottom: 24px;
+  line-height: 1.7;
+  color: var(--on-background);
+}
+.text-content h2 {
+  font-size: 20px;
+  font-weight: 500;
+  margin: 24px 0 12px;
+  color: var(--on-background);
+}
+.text-content h2:first-child {
+  margin-top: 0;
+}
+.text-content h3 {
+  font-size: 17px;
+  font-weight: 500;
+  margin: 20px 0 10px;
+  color: var(--on-background);
+}
+.text-content p {
+  margin-bottom: 12px;
+}
+.text-content ul,
+.text-content ol {
+  padding-left: 28px;
+  margin-bottom: 16px;
+}
+.text-content li {
+  margin-bottom: 6px;
+}
+.warning-title {
+  color: var(--error);
+  font-weight: 500;
+}
+
+/* 图片组 */
+.img-group {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin: 12px 0 20px;
+}
+.img-group img {
+  width: calc(40% - 6px);
+  max-width: 280px;
+  height: auto;
+  border-radius: 8px;
+}
+
+.btn {
+  border: none;
+  border-radius: 999px;
+  padding: 9px 20px;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 1.25px;
+  cursor: pointer;
+  margin: 4px;
+  transition: background 0.2s;
+  outline: none;
+  -webkit-appearance: none;
+  appearance: none;
+  position: relative;
+  overflow: hidden;
+}
+.btn-primary {
+  background-color: var(--primary);
+  color: var(--on-primary);
+  --ripple-gradient: radial-gradient(circle, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 70%);
+}
+.btn-primary:hover {
+  background-color: var(--primary-variant);
+}
+@media (prefers-color-scheme: dark) {
+  .btn-primary {
+    --ripple-gradient: radial-gradient(circle, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0) 70%);
+  }
+}
+
+.popup-menu {
+  position: fixed;
+  top: 8px;
+  right: 16px;
+  background: var(--menu-surface);
+  color: var(--menu-text);
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.35);
+  min-width: 220px;
+  display: none;
+  z-index: 20;
+  overflow: hidden;
+  will-change: display;
+  padding: 8px 0;
+  --ripple-gradient: radial-gradient(circle, rgba(255,255,255,0.16) 0%, rgba(255,255,255,0) 70%);
+}
+.menu-item {
+  padding: 12px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background 0.15s;
+  position: relative;
+  overflow: hidden;
+  color: var(--menu-text);
+}
+.menu-item:hover {
+  background: rgba(255,255,255,0.08);
+}
+
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: 32px;
+  transform: translateX(-50%);
+  background: var(--toast-bg);
+  color: #ffffff;
+  padding: 10px 16px;
+  border-radius: 2px;
+  font-size: 14px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s;
+  z-index: 30;
+}
+.toast.show {
+  opacity: 1;
+}
+
+/* 响应式适配 */
+@media (max-width: 768px) {
+  .container {
+    max-width: 560px;
+    padding: 16px;
+  }
+  .img-group img {
+    width: calc(50% - 6px);
+    max-width: 100%;
+  }
+}
+@media (max-width: 480px) {
+  .img-group img {
+    width: 100%;
+    max-width: 320px;
+    margin: 0 auto;
+    display: block;
+  }
+}
+@media (max-width: 360px) {
+  .container {
+    padding: 12px;
+  }
+  .btn {
+    padding: 8px 16px;
+    font-size:13px;
+  }
+}
+</style>
+</head>
+<body>
+  <div class="app-bar" id="appBar">
+    <h1>LineageOS Easter Egg</h1>
+    <button class="menu-btn ripple-wrap" id="menuBtn">⋮</button>
+  </div>
+
+  <div class="container">
+    <div class="text-content">
+      <h2>一、项目简介</h2>
+      <p>LineageOS 彩蛋原本内嵌在系统「关于手机」页面，连续点击版本号即可唤起，由全球开发者、贡献者名字拼成 Logo，是开源社区独有的浪漫。本项目将彩蛋组件从 ROM 剥离并二次精简打包为独立 APK：</p>
+      <ul>
+        <li>应用名称由原 LineageOS 设置修改为 LineageOS Easter Egg</li>
+        <li>删除 APK 内多余 Activity，只保留彩蛋核心页面（版本二另含贡献者 Activity）。无需刷入 LineageOS、无需 Root，支持在桌面生成独立图标，在其他类原生 Android 系统上也可以体验。</li>
+      </ul>
+
+      <h2>二、版本说明</h2>
+      <p>本次提供两个提取版本，分别是 LineageOS 15 版本和 LineageOS 16 及以上版本，两个版本包名不同，可共存安装。</p>
+
+      <h3>版本一：LineageOS 15 版本</h3>
+      <ul>
+        <li>最低支持安卓版本：Android 7.0</li>
+        <li>包名：org.lineageos.egg</li>
+        <li>可原汁原味地体验该版本彩蛋。</li>
+      </ul>
+      <div class="img-group">
+        <img src="1.png" alt="LineageOS 15 版本彩蛋截图1">
+        <img src="2.png" alt="LineageOS 15 版本彩蛋截图2">
+      </div>
+
+      <h3>版本二：LineageOS 16 及以上版本</h3>
+      <ul>
+        <li>最低支持安卓版本：Android 9.0</li>
+        <li>包名：org.lineageos.egg.canary</li>
+        <li>Logo 界面采用 Android 9 的样式，最终拼出的图案仍是 LineageOS 标识；章鱼界面保持不变。</li>
+        <li>新增贡献者 Activity，可查看 LineageOS 贡献者名单，需借助 Activity Manager 打开。</li>
+      </ul>
+      <div class="img-group">
+        <img src="3.png" alt="LineageOS 16 版本彩蛋截图1">
+        <img src="4.png" alt="LineageOS 16 版本彩蛋截图2">
+      </div>
+
+      <h2>三、通用特性</h2>
+      <ul>
+        <li>原版资源提取，动画与交互忠实于官方彩蛋。</li>
+        <li>应用重命名为 LineageOS Easter Egg，安装后独立可见。</li>
+        <li>精简活动组件，仅保留彩蛋主界面（版本二另含贡献者 Activity），没有多余入口。</li>
+        <li>体积轻量，无多余权限，不收集任何用户数据。</li>
+        <li>版本二支持贡献者名单的缩放与搜索，可放大查看由名字构成的 Logo。</li>
+      </ul>
+
+      <h2 class="warning-title">⚠️ 已知问题</h2>
+      <ol>
+        <li>LineageOS 15 版本彩蛋在 Android 7 系统上无法打开章鱼界面。</li>
+        <li>LineageOS 16 版本及以上彩蛋长按 Logo 不会进到章鱼界面，打开章鱼界面与贡献者界面需借助 Activity Manager。</li>
+        <li>鸿蒙 NEXT 及以上系统可通过卓易通运行，偶有打开即闪退的情况，重新打开一次即可。</li>
+      </ol>
+    </div>
+
+    <button class="btn btn-primary ripple-wrap" onclick="showToast('Primary 按钮点击')">Primary</button>
+  </div>
+
+  <div class="popup-menu" id="popupMenu">
+    <div class="menu-item ripple-wrap" onclick="menuSelect('视频链接')">视频链接</div>
+    <div class="menu-item ripple-wrap" onclick="openAuthorPage()">关于作者</div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+<script>
+// 打开B站作者空间（新标签页）
+function openAuthorPage(){
+  popupMenu.style.display = 'none';
+  window.open("https://space.bilibili.com/1575117242", "_blank");
+}
+
+function createRipple(event) {
+  const el = event.currentTarget;
+  const rect = el.getBoundingClientRect();
+  const ripple = document.createElement('span');
+  const size = Math.max(rect.width, rect.height);
+  const x = event.clientX - rect.left - size / 2;
+  const y = event.clientY - rect.top - size / 2;
+
+  ripple.style.width = ripple.style.height = size + 'px';
+  ripple.style.left = x + 'px';
+  ripple.style.top = y + 'px';
+  ripple.className = 'ripple';
+  ripple.style.background = getComputedStyle(el).getPropertyValue('--ripple-gradient').trim();
+  el.appendChild(ripple);
+  ripple.addEventListener('animationend', () => ripple.remove());
+}
+
+document.querySelectorAll('.ripple-wrap').forEach(item => {
+  item.addEventListener('click', createRipple);
+});
+
+const appBar = document.getElementById('appBar');
+const SCROLL_THRESHOLD = 4;
+window.addEventListener('scroll', () => {
+  if (window.scrollY > SCROLL_THRESHOLD) {
+    appBar.classList.add('scrolled');
+  } else {
+    appBar.classList.remove('scrolled');
+  }
+});
+
+const menuBtn = document.getElementById('menuBtn');
+const popupMenu = document.getElementById('popupMenu');
+
+menuBtn.addEventListener('click', (e) => {
+  e.stopPropagation();
+  popupMenu.style.display = popupMenu.style.display === 'block' ? 'none' : 'block';
+});
+popupMenu.addEventListener('click', e => e.stopPropagation());
+popupMenu.addEventListener('touchstart', e => e.stopPropagation());
+
+document.addEventListener('click', () => {
+  popupMenu.style.display = 'none';
+});
+document.addEventListener('touchstart', () => {
+  popupMenu.style.display = 'none';
+});
+
+function menuSelect(name) {
+  showToast(`选中菜单：${name}`);
+  popupMenu.style.display = 'none';
+}
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.innerText = msg;
+  t.classList.add('show');
+  clearTimeout(showToast.timer);
+  showToast.timer = setTimeout(() => t.classList.remove('show'), 2000);
+}
+</script>
+</body>
+</html>
