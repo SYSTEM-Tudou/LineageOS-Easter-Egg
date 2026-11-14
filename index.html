@@ -354,7 +354,7 @@ body {
       </ol>
     </div>
 
-    <button class="btn btn-primary ripple-wrap" onclick="showToast('Primary 按钮点击')">Primary</button>
+    <button class="btn btn-primary ripple-wrap" onclick="openDownloadPage()">打开下载页面</button>
   </div>
 
   <div class="popup-menu" id="popupMenu">
@@ -369,6 +369,11 @@ body {
 function openAuthorPage(){
   popupMenu.style.display = 'none';
   window.open("https://space.bilibili.com/1575117242", "_blank");
+}
+
+// 打开Github下载页面
+function openDownloadPage(){
+  window.open("https://github.com/SYSTEM-Tudou/LineageOS-Easter-Egg/releases", "_blank");
 }
 
 function createRipple(event) {
